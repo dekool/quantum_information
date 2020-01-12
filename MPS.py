@@ -1,21 +1,5 @@
 import numpy as np
 from numpy import tensordot
-# set the bond dimensions of the varius legs
-Da, Db, Dc, Dd, De, Df = 2,3,3,2,3,5
-# Initialize the A,B tensors using random values
-A = np.random.normal(size=[Da, Db, Dc, Dd])
-B = np.random.normal(size=[Dc, Dd, De, Df])
-# contract A,B along the c,d legs. Resulting tensor will have the
-# legs a,b,e,f (in the order)
-C = tensordot(A, B, axes=([2,3], [0,1]))
-# permute the order of the legs of C so that they will be in the order
-# a,e,b,f
-C1 = C.transpose([0,2,1,3])
-# Fuse the a,e legs and the b,f legs into two big legs
-Cprime = C1.reshape([Da*De, Db*Df])
-# print the first entries of the matrix Cprime:
-print(Cprime[0:2,0:2])
-
 
 def concate_tensors(tensor_a, tensor_b, leg_to_sum_a, leg_to_sum_b):
     return tensordot(tensor_a, tensor_b, axes=([leg_to_sum_a], [leg_to_sum_b]))
@@ -52,7 +36,6 @@ L = np.random.normal(size=[D, D])
 R = np.random.normal(size=[D, D])
 
 B = [[1, 0.5], [0.5, -2]]
-#B = [[1, 0], [0, 1]]
 # build the tensors
 for j in range(2):
     for a in range(2):
@@ -65,8 +48,7 @@ for j in range(2):
         R[j][a] = j + a
 
 answer = []
-for N in range(400, 410, 10):
-    print(N)
+for N in range(10, 110, 10):
     # temp: hold a Tensor which keeps the computation
     temp = concate_tensors(L, L, 0, 0)
     n = (2*N)-1
@@ -87,8 +69,7 @@ for N in range(400, 410, 10):
     # sum with the Rs
     new_R = concate_tensors(R, R, 0, 0)
     temp_num = tensordot(temp, new_R, axes=([0, 1], [0, 1]))
-    norm = np.abs(temp_num) #** 2
+    norm = np.abs(temp_num)
 
-    print(result)
     answer.append(result/norm)
 print(answer)
